@@ -55,22 +55,65 @@ def index():
     current_user = session['username']
     
     # Get ONLY this user's meals
-    today_meals = get_user_meals(current_user)
+    user_meals = get_user_meals(current_user)
     
-    total_calories = 0
-    total_protein = 0
+    # Get today's date
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    current_date_display = datetime.now().strftime("%B %d, %Y")
+
+    # Initialize counters
+    today_calories = 0
+    today_protein = 0
     
-    for meal in today_meals:
-        total_calories += int(meal.get('calories', 0))
-        total_protein += int(meal.get('protein', 0))
+    total_lifetime_calories = 0
+    total_lifetime_protein = 0
+    
+    # For Average Calculation
+    daily_stats = {} # Format: {'2023-10-27': {'calories': 2000, 'protein': 150}}
+
+    today_meals_list = []
+
+    for meal in user_meals:
+        # Handle legacy data without date (assume today, or skip? Let's assume today for now to not lose data visibility)
+        meal_date = meal.get('date', today_str) 
         
-    current_date = datetime.now().strftime("%B %d, %Y")
+        m_cals = int(meal.get('calories', 0))
+        m_prot = int(meal.get('protein', 0))
+        
+        # Lifetime totals
+        total_lifetime_calories += m_cals
+        total_lifetime_protein += m_prot
+        
+        # Aggregate for Daily Averages
+        if meal_date not in daily_stats:
+            daily_stats[meal_date] = {'calories': 0, 'protein': 0}
+        daily_stats[meal_date]['calories'] += m_cals
+        daily_stats[meal_date]['protein'] += m_prot
+        
+        # Today's Specifics
+        if meal_date == today_str:
+            today_calories += m_cals
+            today_protein += m_prot
+            today_meals_list.append(meal)
+
+    # Calculate Averages
+    days_logged = len(daily_stats)
+    if days_logged > 0:
+        avg_calories = int(total_lifetime_calories / days_logged)
+        avg_protein = int(total_lifetime_protein / days_logged)
+    else:
+        avg_calories = 0
+        avg_protein = 0
 
     return render_template('index.html', 
-                         meals=today_meals, 
-                         total_calories=total_calories, 
-                         total_protein=total_protein,
-                         date=current_date,
+                         meals=today_meals_list, 
+                         today_calories=today_calories, 
+                         today_protein=today_protein,
+                         avg_calories=avg_calories,
+                         avg_protein=avg_protein,
+                         total_calories=total_lifetime_calories,
+                         total_protein=total_lifetime_protein,
+                         date=current_date_display,
                          username=current_user)
 
 # 2. Add Meal Route
@@ -90,7 +133,8 @@ def add_meal():
         'name': meal_name,
         'calories': calories,
         'protein': protein,
-        'time': datetime.now().strftime("%I:%M %p")
+        'time': datetime.now().strftime("%I:%M %p"),
+        'date': datetime.now().strftime("%Y-%m-%d") # Store the date!
     }
     
     # Load ALL meals, add new one, and save back
@@ -167,3 +211,4 @@ def logout():
 if __name__ == '__main__':
     # host='0.0.0.0' allows other devices on the same WiFi to connect!
     app.run(debug=True, host='0.0.0.0', port=5002)
+

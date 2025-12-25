@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - IZ Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="background-glow"></div>
+
+    <div class="app-container" style="max-width: 400px; margin-top: 10vh;">
+
+        <header class="main-header">
+            <h1 class="logo">IZ <span class="highlight">Tracker</span></h1>
+            <p class="tagline">Prioritize Your Health</p>
+        </header>
+
+        <div class="card form-card">
+            <h2 style="text-align: center;">Welcome Back</h2>
+
+            {% if error %}
+            <div
+                style="background: rgba(255, 77, 77, 0.2); color: #ff8888; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-size: 0.9em;">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form action="/login" method="POST">
+
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" name="username" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" name="password" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Login</button>
+            </form>
+
+            <div style="text-align: center; margin-top: 20px; font-size: 0.9em; color: var(--text-muted);">
+                New here? <a href="/register" style="color: var(--accent-color); text-decoration: none;">Create an
+                    Account</a>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

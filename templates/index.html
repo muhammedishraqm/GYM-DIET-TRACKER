@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IZ – Gym Diet Daily Tracker</title>
+
+    <!-- Link to our CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Modern Font: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Background glowing effect -->
+    <div class="background-glow"></div>
+
+    <div class="app-container">
+
+        <!-- Headers Section -->
+        <header class="main-header">
+            <h1 class="logo">IZ <span class="highlight">Tracker</span></h1>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                <span style="color: white; font-size: 0.9em;">Hi, {{ username }}</span>
+                <a href="/logout"
+                    style="color: var(--text-muted); font-size: 0.8em; text-decoration: none; border: 1px solid #333; padding: 4px 10px; border-radius: 20px;">Logout</a>
+            </div>
+            <div class="current-date">{{ date }}</div>
+        </header>
+
+        <!-- Totals Dashboard -->
+        <div class="stats-dashboard">
+            <div class="stat-card">
+                <h3>Calories</h3>
+                <div class="value">{{ total_calories }}</div>
+                <div class="unit">kcal</div>
+            </div>
+            <div class="stat-card">
+                <h3>Protein</h3>
+                <div class="value">{{ total_protein }}</div>
+                <div class="unit">grams</div>
+            </div>
+        </div>
+
+        <!-- Input Form Section -->
+        <div class="card form-card">
+            <h2>Add New Meal</h2>
+            <form action="/add" method="POST">
+
+                <div class="input-group">
+                    <label>Meal Name</label>
+                    <input type="text" name="meal_name" placeholder="e.g. Oats & Whey" required>
+                </div>
+
+                <div class="row">
+                    <div class="input-group half">
+                        <label>Calories</label>
+                        <input type="number" name="calories" placeholder="0" required>
+                    </div>
+                    <div class="input-group half">
+                        <label>Protein (g)</label>
+                        <input type="number" name="protein" placeholder="0" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Add to Log</button>
+            </form>
+        </div>
+
+        <!-- List of Meals -->
+        <div class="card list-card">
+            <div class="card-header">
+                <h2>Today's Log</h2>
+                <a href="/reset" class="btn-reset">Clear All</a>
+            </div>
+
+            {% if meals %}
+            <ul class="meal-list">
+                {% for meal in meals %}
+                <li class="meal-item">
+                    <div class="meal-details">
+                        <span class="meal-time">{{ meal.time }}</span>
+                        <span class="meal-title">{{ meal.name }}</span>
+                    </div>
+                    <div class="meal-numbers">
+                        <span class="tag kcal">{{ meal.calories }} kcal</span>
+                        <span class="tag pro">{{ meal.protein }}g pro</span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="empty-state">
+                <p>No meals added yet today.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+</body>
+
+</html>

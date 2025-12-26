@@ -1,4 +1,4 @@
-#Gym Diet Daily Tracker
+# Gym Diet Daily Tracker
 
 A simple Python + Flask beginner project to track daily meals, calories, and protein.
 

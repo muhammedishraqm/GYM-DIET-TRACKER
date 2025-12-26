@@ -17,4 +17,4 @@ Stack
 
 Python • Flask • HTML • CSS
 
-IZ — eat clean, train consistent 💪
+IZ — eat clean, train consistent 

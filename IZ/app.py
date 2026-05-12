@@ -2,18 +2,24 @@ from flask import Flask, render_template, request, redirect, session, url_for, f
 import json
 import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables from .env file if it exists
+load_dotenv()
 
 # Initialize the Flask app
 app = Flask(__name__)
 # SECRET KEY is required for 'session' (logging in) to work. 
-# It keeps the data safe. In a real app, make this a long random string.
-app.secret_key = "my_super_secret_gym_key"
+# Using environment variable for security on Vercel.
+app.secret_key = os.environ.get("SECRET_KEY", "my_super_secret_gym_key")
 
 # ---------------------------------------------------------
 # CONFIGURATION
 # ---------------------------------------------------------
-DATA_FILE = 'data.json'
-USERS_FILE = 'users.json'
+# Use absolute paths relative to the script location to avoid issues on Vercel
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(BASE_DIR, 'data.json')
+USERS_FILE = os.path.join(BASE_DIR, 'users.json')
 
 
 # ---------------------------------------------------------
@@ -31,8 +37,14 @@ def load_data(filename, default):
 
 def save_data(filename, data):
     """Generic function to save JSON data to a file"""
-    with open(filename, 'w') as file:
-        json.dump(data, file, indent=4)
+    try:
+        with open(filename, 'w') as file:
+            json.dump(data, file, indent=4)
+    except OSError as e:
+        # On Vercel, the filesystem is read-only.
+        # We catch this error so the app doesn't crash, 
+        # though data won't be saved persistently.
+        print(f"Error saving data to {filename}: {e}")
 
 def get_user_meals(username):
     """Get meals ONLY for the specific user"""
@@ -210,5 +222,6 @@ def logout():
 # Start the server
 if __name__ == '__main__':
     # host='0.0.0.0' allows other devices on the same WiFi to connect!
-    app.run(debug=True, host='0.0.0.0', port=5002)
+    port = int(os.environ.get("PORT", 5002))
+    app.run(debug=True, host='0.0.0.0', port=port)
 

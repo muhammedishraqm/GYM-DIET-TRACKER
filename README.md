@@ -8,10 +8,27 @@ Features
 	•	Daily totals
 	•	Local file storage (JSON)
 
-Run
+### Run Locally
 
-pip install flask
-python app.py
+1. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. Run the app:
+   ```bash
+   # Default port 5002
+   python IZ/app.py
+   
+   # Or use a custom port
+   PORT=5003 python IZ/app.py
+   ```
+
+### Vercel Deployment
+
+This project is configured for Vercel. 
+
+> [!NOTE]
+> **Data Persistence**: Because this app uses local JSON files, data is **not persistent** on Vercel. For long-term storage, consider migrating to a database (e.g., Supabase, MongoDB).
 
 Stack
 
